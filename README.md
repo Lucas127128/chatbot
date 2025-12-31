@@ -80,4 +80,4 @@ We welcome any feedback, suggestions, or contributions to enhance the ChatBot ap
 
 ## License 📄
 
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0) - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0) - see the [LICENSE](LICENSE) file for details.
