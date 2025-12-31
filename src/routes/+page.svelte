@@ -241,7 +241,7 @@
 
 <div class={theme}>
 	<div class="dark:bg-black dark:text-white">
-		<ul class="box-border max-h-svh overflow-y-scroll pb-15 lg:px-[20%] lg:pt-5">
+		<ul class="box-border h-svh overflow-y-scroll pb-15 lg:px-[20%] lg:pt-5">
 			{#each msgArray as msg, index (index)}
 				{#if msg.role !== 'system'}
 					<li
