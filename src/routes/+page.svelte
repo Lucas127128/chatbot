@@ -28,7 +28,7 @@
 	} from '$lib/components/ui/select';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
-	import Bot from '@lucide/svelte/icons/bot';
+	import Computer from '@lucide/svelte/icons/computer';
 	import User from '@lucide/svelte/icons/user';
 	import BrushCleaning from '@lucide/svelte/icons/brush-cleaning';
 	import Settings from '@lucide/svelte/icons/settings';
@@ -265,7 +265,7 @@
 								: ' bg-zinc-50 outline-zinc-200 dark:bg-zinc-800 dark:stroke-white dark:outline-zinc-700')}
 					>
 						{#if msg.role === 'assistant'}
-							<Bot />
+							<Computer />
 						{:else}
 							<User />
 						{/if}
@@ -375,7 +375,7 @@
 	</form>
 </div>
 
-<style>
+<style lang="postcss">
 	@reference "./layout.css";
 	@custom-variant dark (&:where(.dark, .dark *));
 	:global {
