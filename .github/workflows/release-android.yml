@@ -18,6 +18,7 @@ jobs:
       - name: setup rust
         uses: dtolnay/rust-toolchain@stable
         with:
+          # Install ALL targets for a universal build
           targets: aarch64-linux-android, armv7-linux-androideabi, i686-linux-android, x86_64-linux-android
 
       - name: install Android SDK
@@ -28,6 +29,11 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
+
+      - name: Setup NDK
+        run: |
+          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
+          echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
 
       - name: install dependencies
         run: bun install
@@ -44,8 +50,8 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NDK_HOME: ${{ env.ANDROID_NDK_HOME }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "App ${{ github.ref_name }}"
-          prerelease: true # Marks it as a Beta in GitHub
-          args: --target aarch64-linux-android # Or multiple targets if needed
+          prerelease: true
