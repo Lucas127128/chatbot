@@ -107,7 +107,12 @@
 
 	function cleanHistory() {
 		localStorage.removeItem('messages');
-		msgArray = [];
+		msgArray = [
+			{
+				role: 'system',
+				content: 'Always respond in Markdown format.'
+			}
+		];
 		clearAlertOpen = false;
 	}
 
@@ -395,9 +400,12 @@
 			}
 			pre {
 				@apply w-fit max-w-full overflow-x-scroll rounded-lg border-2 border-white/50 p-3 dark:border-white/10;
+				code {
+					@apply rounded-none bg-transparent p-0;
+				}
 			}
 			code {
-				@apply rounded-sm bg-black/7.5 px-1;
+				@apply rounded-sm bg-black/7.5 px-1 dark:bg-white/10;
 			}
 		}
 		li:last-of-type {
