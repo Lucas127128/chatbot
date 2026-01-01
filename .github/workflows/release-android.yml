@@ -26,33 +26,29 @@ jobs:
         with:
           targets: aarch64-linux-android, armv7-linux-androideabi, i686-linux-android, x86_64-linux-android
 
-      - name: install Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: setup JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup NDK
-        run: |
-          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
-          echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
+      - name: install Android SDK & NDK
+        uses: android-actions/setup-android@v3
+        with:
+          # Explicitly request NDK if not present
+          packages: "ndk;26.1.10909125" 
 
       - name: install dependencies
         run: bun install
 
       - name: prepare signing
         run: |
-          # The key must be in the 'app' folder where the build runs
           mkdir -p src-tauri/gen/android/app
           
-          # Decode the keystore
+          # Decode keystore
           echo "${{ secrets.ANDROID_KEY_BASE64 }}" | base64 -d > src-tauri/gen/android/app/release.jks
           
-          # Create the properties file in the 'app' folder
-          # We use the absolute path for 'storeFile' to be 100% safe
+          # Create properties file INSIDE the app folder
           cat <<EOT > src-tauri/gen/android/app/keystore.properties
           keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
           password=${{ secrets.ANDROID_KEY_PASSWORD }}
@@ -63,7 +59,9 @@ jobs:
       - name: build android
         run: bun tauri android build
         env:
-          NDK_HOME: ${{ env.ANDROID_NDK_HOME }}
+          # Tauri uses these to find the NDK automatically
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.1.10909125
 
       - name: upload release
         uses: softprops/action-gh-release@v2
@@ -71,3 +69,4 @@ jobs:
         with:
           files: |
             src-tauri/gen/android/app/build/outputs/apk/release/*.apk
+            src-tauri/gen/android/app/build/outputs/bundle/release/*.aab

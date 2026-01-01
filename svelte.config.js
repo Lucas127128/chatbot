@@ -15,7 +15,15 @@ const config = {
 
   kit: {
     adapter: adapter({ fallback: 'index.html' }),
-    alias: { $lib: path.resolve('./src/lib') }
+    alias: { $lib: path.resolve('./src/lib') },
+    csp: {
+      directives: {
+        'script-src': ['self']
+      },
+      reportOnly: {
+        'script-src': ['self']
+      }
+    }
   },
 
   extensions: ['.svelte', '.svx']
