@@ -49,11 +49,18 @@ jobs:
 
       - name: prepare signing
         run: |
-          mkdir -p src-tauri/gen/android
-          cd src-tauri/gen/android
+          # Create the directory if it doesn't exist
+          mkdir -p src-tauri/gen/android/app
+          
+          # Move into the 'app' subdirectory where Gradle expects the key
+          cd src-tauri/gen/android/app
+          
+          # Create the files here
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
           echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties
           echo "${{ secrets.ANDROID_KEY_BASE64 }}" | base64 -d > release.jks
+          
+          # This tells Gradle the file is in the same directory as this property file
           echo "storeFile=release.jks" >> keystore.properties
 
       - name: build android
