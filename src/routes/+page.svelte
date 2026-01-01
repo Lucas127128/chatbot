@@ -37,6 +37,7 @@
 	import { onMount } from 'svelte';
 	import { marked } from 'marked';
 	import { createHighlighter } from 'shiki';
+  import markedKatex from "marked-katex-extension"
 
 	// Interface Declaration
 
@@ -110,7 +111,7 @@
 		msgArray = [
 			{
 				role: 'system',
-				content: 'Always respond in Markdown format.'
+				content: 'Always respond in Markdown format. Use Katex for any mathematical-related text.'
 			}
 		];
 		clearAlertOpen = false;
@@ -199,6 +200,11 @@
 				}
 			}
 		});
+
+    marked.use(markedKatex({
+      throwOnError: false,
+      displayMode: true
+    }))
 
 		return await marked.parse(content);
 	}
