@@ -163,7 +163,7 @@ li>div {
     @apply w-fit max-w-full overflow-x-scroll rounded-lg border-2 border-white/50 p-3 dark:border-white/10;
 
     code {
-      @apply rounded-none bg-transparent p-0;
+      @apply rounded-none bg-transparent! p-0;
     }
   }
 
