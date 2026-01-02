@@ -36,8 +36,10 @@
 	import OpenAI from 'openai';
 	import { onMount } from 'svelte';
 	import { marked } from 'marked';
-	import { createHighlighter } from 'shiki';
-  import markedKatex from "marked-katex-extension"
+  import { createHighlighter } from 'shiki';
+  import markedKatex from "marked-katex-extension";
+  import DOMPurify from "dompurify";
+	import { bundledLanguages } from 'shiki';
 
 	// Interface Declaration
 
@@ -82,28 +84,8 @@
 	// Function
 
 	const highlighterPromise = createHighlighter({
-		themes: ['catppuccin-mocha'],
-		langs: [
-			'jsx',
-			'tsx',
-			'js',
-			'ts',
-			'javascript',
-			'typescript',
-			'html',
-			'css',
-			'json',
-			'svelte',
-			'markdown',
-			'md',
-			'mdx',
-			'php',
-			'bash',
-			'c',
-			'c++',
-			'c#',
-			'rust'
-		]
+    themes: ['catppuccin-mocha'],
+    langs: Object.keys(bundledLanguages)
 	});
 
 	function cleanHistory() {
@@ -189,8 +171,15 @@
 
 	async function parseMarkdown(content: string) {
 		const highlighter = await highlighterPromise;
+
+    marked.use(markedKatex({
+      throwOnError: false,
+      displayMode:true,
+      output: "mathml"
+    }));
+
 		marked.use({
-			async: true, // Crucial: enables awaiting the highlighter inside tokens
+			async: true,
 			renderer: {
 				code({ text, lang }) {
 					return highlighter.codeToHtml(text, {
@@ -201,13 +190,8 @@
 			}
 		});
 
-    marked.use(markedKatex({
-      throwOnError: false,
-      displayMode:true,
-      output: "mathml" 
-    }))
-
-		return await marked.parse(content);
+		const htmlString: string = await marked.parse(content);
+    return DOMPurify.sanitize(htmlString);
 	}
 
 	function scrollToLatestMsg(instant: boolean = false) {
@@ -262,13 +246,13 @@
 		{#each msgArray as msg, index (index)}
 			{#if msg.role !== 'system'}
 				<li
-					class={'flex max-w-full gap-3 border-b border-b-black/10 p-4' +
-						(msg.err ? ' bg-red-100' : '')}
+					class={'flex max-w-full gap-3 border-b border-b-black/10 lg:border-0 lg:rounded-lg p-4' +
+						(msg.err ? ' bg-red-100 dark:bg-red-950/50' : '')}
 				>
 					<span
 						class={'h-fit rounded-md p-1 outline-2' +
 							(msg.err
-								? ' bg-red-50 text-red-900 outline-red-300 dark:bg-red-400 dark:text-red-300'
+								? ' bg-red-50 text-red-900 outline-red-300 dark:bg-black/75 dark:text-red-300'
 								: ' bg-zinc-50 outline-zinc-200 dark:bg-zinc-800 dark:stroke-white dark:outline-zinc-700')}
 					>
 						{#if msg.role === 'assistant'}
@@ -279,10 +263,10 @@
 					</span>
 					<div
 						class={'my-auto max-w-[85%]' +
-							(msg.err ? 'font-semibold text-red-900 dark:text-red-400' : '')}
+							(msg.err ? ' font-semibold text-red-900 dark:text-red-400' : '')}
 					>
 						{#await parseMarkdown(msg.err ? 'Error: ' + msg.content : msg.content) then html}
-							{@html html}
+              {@html html}
 						{/await}
 					</div>
 				</li>
